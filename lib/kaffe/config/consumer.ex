@@ -1,24 +1,24 @@
 defmodule Kaffe.Config.Consumer do
   import Kaffe.Config, only: [heroku_kafka_endpoints: 0, parse_endpoints: 1]
 
-  def configuration do
+  def configuration(params \\ %{}) do
     %{
-      endpoints: endpoints(),
-      subscriber_name: subscriber_name(),
-      consumer_group: consumer_group(),
-      topics: topics(),
-      group_config: consumer_group_config(),
-      consumer_config: client_consumer_config(),
-      message_handler: message_handler(),
-      async_message_ack: async_message_ack(),
-      rebalance_delay_ms: rebalance_delay_ms(),
-      max_bytes: max_bytes(),
-      min_bytes: min_bytes(),
-      max_wait_time: max_wait_time(),
-      subscriber_retries: subscriber_retries(),
-      subscriber_retry_delay_ms: subscriber_retry_delay_ms(),
-      offset_reset_policy: offset_reset_policy(),
-      worker_allocation_strategy: worker_allocation_strategy()
+      endpoints: params["endpoints"] || endpoints(),
+      subscriber_name: params["subscriber_name"] || subscriber_name(),
+      consumer_group: params["consumer_group"] || consumer_group(),
+      topics: params["topics"] || topics(),
+      group_config: params["group_config"] || consumer_group_config(),
+      consumer_config: params["consumer_config"] || client_consumer_config(),
+      message_handler: params["message_handler"] || message_handler(),
+      async_message_ack: params["async_message_ack"] || async_message_ack(),
+      rebalance_delay_ms: params["rebalance_delay_ms"] || rebalance_delay_ms(),
+      max_bytes: params["max_bytes"] || max_bytes(),
+      min_bytes: params["min_bytes"] || min_bytes(),
+      max_wait_time: params["max_wait_time"] || max_wait_time(),
+      subscriber_retries: params["subscriber_retries"] || subscriber_retries(),
+      subscriber_retry_delay_ms: params["subscriber_retry_delay_ms"] || subscriber_retry_delay_ms(),
+      offset_reset_policy: params["offset_reset_policy"] || offset_reset_policy(),
+      worker_allocation_strategy: params["worker_allocation_strategy"] || worker_allocation_strategy()
     }
   end
 

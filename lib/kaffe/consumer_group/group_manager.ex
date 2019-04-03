@@ -31,8 +31,8 @@ defmodule Kaffe.GroupManager do
   ## ==========================================================================
   ## Public API
   ## ==========================================================================
-  def start_link() do
-    GenServer.start_link(__MODULE__, [self()], name: name())
+  def start_link(configuration \\ %{}) do
+    GenServer.start_link(__MODULE__, [self(), configuration], name: name())
   end
 
   @doc """
@@ -53,10 +53,10 @@ defmodule Kaffe.GroupManager do
   ## ==========================================================================
   ## Callbacks
   ## ==========================================================================
-  def init([supervisor_pid]) do
+  def init([supervisor_pid, configuration]) do
     Logger.info("event#startup=#{__MODULE__} name=#{name()}")
 
-    config = Kaffe.Config.Consumer.configuration()
+    config = Kaffe.Config.Consumer.configuration(configuration)
     :ok = kafka().start_client(config.endpoints, config.subscriber_name, config.consumer_config)
 
     GenServer.cast(self(), {:start_group_members})
@@ -79,7 +79,9 @@ defmodule Kaffe.GroupManager do
   def handle_cast({:start_group_members}, state) do
     Logger.debug("Starting worker supervisors for group manager: #{inspect(self())}")
 
-    {:ok, worker_supervisor_pid} = group_member_supervisor().start_worker_supervisor(state.supervisor_pid, state.subscriber_name)
+    {:ok, worker_supervisor_pid} =
+      group_member_supervisor().start_worker_supervisor(state.supervisor_pid, state.subscriber_name)
+
     {:ok, worker_manager_pid} = worker_supervisor().start_worker_manager(worker_supervisor_pid, state.subscriber_name)
 
     state = %State{state | worker_manager_pid: worker_manager_pid}
